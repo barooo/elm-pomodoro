@@ -1,0 +1,65 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var view = function (pomodoros) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text(A2($Basics._op["++"],
+      "pomodoros time: ",
+      $Basics.toString(pomodoros.currentPomodoro.time)))]));
+   };
+   var updatedPomodoro = function (p) {
+      return {_: {}
+             ,time: p.time + 1};
+   };
+   var updatedPomodoros = function (pomodoros) {
+      return {_: {}
+             ,completedPomodoros: pomodoros.completedPomodoros
+             ,currentPomodoro: updatedPomodoro(pomodoros.currentPomodoro)};
+   };
+   var model = {_: {}
+               ,completedPomodoros: _L.fromArray([])
+               ,currentPomodoro: {_: {}
+                                 ,time: 0}};
+   var Pomodoros = F2(function (a,
+   b) {
+      return {_: {}
+             ,completedPomodoros: a
+             ,currentPomodoro: b};
+   });
+   var Pomodoro = function (a) {
+      return {_: {},time: a};
+   };
+   var main = A2($Signal._op["<~"],
+   view,
+   A3($Signal.foldp,
+   F2(function (t,pomodoros) {
+      return updatedPomodoros(pomodoros);
+   }),
+   model,
+   $Time.every($Time.second)));
+   _elm.Main.values = {_op: _op
+                      ,main: main
+                      ,Pomodoro: Pomodoro
+                      ,Pomodoros: Pomodoros
+                      ,model: model
+                      ,updatedPomodoro: updatedPomodoro
+                      ,updatedPomodoros: updatedPomodoros
+                      ,view: view};
+   return _elm.Main.values;
+};
