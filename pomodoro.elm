@@ -13,17 +13,26 @@ type alias Pomodoros =
   currentPomodoro: Pomodoro}
 
 
-model = {completedPomodoros = [], currentPomodoro = {time = 0}}
+model = {completedPomodoros = [], currentPomodoro = newPomodoro}
 
 updatedPomodoro : Pomodoro -> Pomodoro
 updatedPomodoro p =
   {time = p.time + 1}
 
+newPomodoro = {time = 1}
+
+isPomodoroComplete = \p -> p.time >= 5
+
 updatedPomodoros : Pomodoros -> Pomodoros
 updatedPomodoros pomodoros =
-  {completedPomodoros = pomodoros.completedPomodoros,
-  currentPomodoro = updatedPomodoro pomodoros.currentPomodoro}
+  if isPomodoroComplete pomodoros.currentPomodoro
+     then {completedPomodoros = pomodoros.completedPomodoros ++ [pomodoros.currentPomodoro],
+           currentPomodoro = newPomodoro}
+     else
+       {completedPomodoros = pomodoros.completedPomodoros,
+        currentPomodoro = updatedPomodoro pomodoros.currentPomodoro}
 
 view pomodoros =
   div []
-    [text ("pomodoros time: " ++ toString pomodoros.currentPomodoro.time)]
+        [ul [] (List.map (\p -> li [] [text "a completed pomodoro!"]) pomodoros.completedPomodoros)]
+        text ("pomodoros time: " ++ toString pomodoros.currentPomodoro.time)]

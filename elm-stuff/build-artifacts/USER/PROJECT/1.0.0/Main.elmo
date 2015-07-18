@@ -20,22 +20,39 @@ Elm.Main.make = function (_elm) {
       return A2($Html.div,
       _L.fromArray([]),
       _L.fromArray([$Html.text(A2($Basics._op["++"],
-      "pomodoros time: ",
-      $Basics.toString(pomodoros.currentPomodoro.time)))]));
+                   "pomodoros time: ",
+                   $Basics.toString(pomodoros.currentPomodoro.time)))
+                   ,A2($Html.ul,
+                   _L.fromArray([]),
+                   A2($List.map,
+                   function (p) {
+                      return A2($Html.li,
+                      _L.fromArray([]),
+                      _L.fromArray([$Html.text("a completed pomodoro!")]));
+                   },
+                   pomodoros.completedPomodoros))]));
    };
+   var isPomodoroComplete = function (p) {
+      return _U.cmp(p.time,5) > -1;
+   };
+   var newPomodoro = {_: {}
+                     ,time: 1};
    var updatedPomodoro = function (p) {
       return {_: {}
              ,time: p.time + 1};
    };
    var updatedPomodoros = function (pomodoros) {
-      return {_: {}
-             ,completedPomodoros: pomodoros.completedPomodoros
-             ,currentPomodoro: updatedPomodoro(pomodoros.currentPomodoro)};
+      return isPomodoroComplete(pomodoros.currentPomodoro) ? {_: {}
+                                                             ,completedPomodoros: A2($Basics._op["++"],
+                                                             pomodoros.completedPomodoros,
+                                                             _L.fromArray([pomodoros.currentPomodoro]))
+                                                             ,currentPomodoro: newPomodoro} : {_: {}
+                                                                                              ,completedPomodoros: pomodoros.completedPomodoros
+                                                                                              ,currentPomodoro: updatedPomodoro(pomodoros.currentPomodoro)};
    };
    var model = {_: {}
                ,completedPomodoros: _L.fromArray([])
-               ,currentPomodoro: {_: {}
-                                 ,time: 0}};
+               ,currentPomodoro: newPomodoro};
    var Pomodoros = F2(function (a,
    b) {
       return {_: {}
@@ -48,8 +65,10 @@ Elm.Main.make = function (_elm) {
    var main = A2($Signal._op["<~"],
    view,
    A3($Signal.foldp,
-   F2(function (t,pomodoros) {
-      return updatedPomodoros(pomodoros);
+   F2(function (_v0,pomodoros) {
+      return function () {
+         return updatedPomodoros(pomodoros);
+      }();
    }),
    model,
    $Time.every($Time.second)));
@@ -59,6 +78,8 @@ Elm.Main.make = function (_elm) {
                       ,Pomodoros: Pomodoros
                       ,model: model
                       ,updatedPomodoro: updatedPomodoro
+                      ,newPomodoro: newPomodoro
+                      ,isPomodoroComplete: isPomodoroComplete
                       ,updatedPomodoros: updatedPomodoros
                       ,view: view};
    return _elm.Main.values;
